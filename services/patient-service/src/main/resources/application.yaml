@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/healthcare
+    username: healthcare
+    password: healthcare_dev
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+  hibernate:
+    ddl-auto: validate
+  open-in-view: false

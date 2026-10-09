@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: healthcare-postgres
+    environment:
+      POSTGRES_DB: healthcare
+      POSTGRES_USER: healthcare
+      POSTGRES_PASSWORD: healthcare_dev
+      TZ: "Asia/Kolkata"
+    # This forces Postgres to run with the Calcutta timezone configuration dynamically
+    command: ["postgres", "-c", "timezone=Asia/Kolkata"] 
+    ports:
+      - "5433:5432"
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
