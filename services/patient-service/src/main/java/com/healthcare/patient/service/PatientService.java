@@ -3,6 +3,7 @@ package com.healthcare.patient.service;
 import com.healthcare.patient.dto.PatientRegistrationRequest;
 import com.healthcare.patient.dto.PatientResponse;
 import com.healthcare.patient.entity.Patient;
+import com.healthcare.patient.exception.ResourceNotFoundException;
 import com.healthcare.patient.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,6 @@ public class PatientService {
         this.mrnGenerator = mrnGenerator;
     }
 
-
     @Transactional
     public PatientResponse registerPatient(PatientRegistrationRequest request) {
         Patient patient = new Patient();
@@ -38,21 +38,36 @@ public class PatientService {
 
         Patient saved = patientRepository.saveAndFlush(patient);
 
-        return new PatientResponse(
-                saved.getId(),
-                saved.getMedicalRecordNumber(),
-                saved.getFirstName(),
-                saved.getLastName(),
-                saved.getDateOfBirth(),
-                saved.getGender(),
-                saved.getEmail(),
-                saved.getPhone(),
-                saved.getCreatedAt()
-        );
+        return toResponse(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public PatientResponse getPatientById(UUID id){
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Patient not found with id: " + id
+                ));
+        return toResponse(patient);
     }
 
     private String normalizeOptional(String value) {
         return value == null || value.isBlank() ? null : value.trim();
     }
+
+    private PatientResponse toResponse(Patient patient) {
+        return new PatientResponse(
+                patient.getId(),
+                patient.getMedicalRecordNumber(),
+                patient.getFirstName(),
+                patient.getLastName(),
+                patient.getDateOfBirth(),
+                patient.getGender(),
+                patient.getEmail(),
+                patient.getPhone(),
+                patient.getCreatedAt()
+        );
+    }
+
+
 }
 
