@@ -2,6 +2,7 @@ package com.healthcare.patient.controller;
 
 import com.healthcare.patient.dto.PatientRegistrationRequest;
 import com.healthcare.patient.dto.PatientResponse;
+import com.healthcare.patient.dto.PatientUpdateRequest;
 import com.healthcare.patient.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,17 @@ public class PatientController {
     @GetMapping("/{id}")
     public ResponseEntity<PatientResponse> getPatientById(@PathVariable UUID id) {
         PatientResponse response = patientService.getPatientById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PatientResponse> updatePatient(
+            @PathVariable UUID id,
+            @Valid @RequestBody PatientUpdateRequest request) {
+
+        PatientResponse response =
+                patientService.updatePatient(id, request);
+
         return ResponseEntity.ok(response);
     }
 }

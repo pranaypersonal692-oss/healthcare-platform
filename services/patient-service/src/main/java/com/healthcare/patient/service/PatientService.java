@@ -2,6 +2,7 @@ package com.healthcare.patient.service;
 
 import com.healthcare.patient.dto.PatientRegistrationRequest;
 import com.healthcare.patient.dto.PatientResponse;
+import com.healthcare.patient.dto.PatientUpdateRequest;
 import com.healthcare.patient.entity.Patient;
 import com.healthcare.patient.exception.ResourceNotFoundException;
 import com.healthcare.patient.repository.PatientRepository;
@@ -50,6 +51,26 @@ public class PatientService {
         return toResponse(patient);
     }
 
+    @Transactional
+    public PatientResponse updatePatient(
+            UUID patientId,
+            PatientUpdateRequest request) {
+
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Patient not found with id: " + patientId));
+
+        patient.setFirstName(request.firstName().trim());
+        patient.setLastName(request.lastName().trim());
+        patient.setDateOfBirth(request.dateOfBirth());
+        patient.setGender(request.gender());
+        patient.setEmail(normalizeOptional(request.email()));
+        patient.setPhone(normalizeOptional(request.phone()));
+
+        Patient updatedPatient = patientRepository.saveAndFlush(patient);
+        return toResponse(updatedPatient);
+    }
+
     private String normalizeOptional(String value) {
         return value == null || value.isBlank() ? null : value.trim();
     }
@@ -67,7 +88,5 @@ public class PatientService {
                 patient.getCreatedAt()
         );
     }
-
-
 }
 
